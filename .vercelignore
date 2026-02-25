@@ -1,0 +1,15 @@
+# Skip non-essential files from build
+node_modules/.bin
+.git
+.gitignore
+README.md
+.eslintignore
+.prettierignore
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+coverage
+.nyc_output
+dist
+build

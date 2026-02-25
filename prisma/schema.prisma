@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses Course[]
+
+  @@map("categories")
+}
+
+model Course {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  title                 String
+  slug                  String   @unique
+  tagline               String
+  description           String
+  categoryId            String   @db.ObjectId
+  level                 String
+  price                 Int
+  originalPrice         Int
+  duration              String
+  modulesCount          Int
+  studentsCount         Int      @default(0)
+  rating                Float    @default(4.9)
+  certificate           Boolean  @default(true)
+  icon                  String
+  highlights            Json
+  skills                Json
+  curriculum            Json
+  faqs                  Json
+  instructorName        String
+  instructorTitle       String
+  instructorInitials    String
+  instructorAvatarColor String
+  colorFrom             String
+  colorTo               String
+  accentHex             String
+  badgeClass            String
+  isPublished           Boolean  @default(true)
+
+  // SEO Fields
+  metaTitle            String?
+  metaDescription      String?
+  ogTitle              String?
+  ogDescription        String?
+  ogImage              String?
+  twitterTitle         String?
+  twitterDescription   String?
+  twitterImage         String?
+  canonicalUrl         String?
+  robots               String   @default("index, follow")
+  focusKeyword         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("courses")
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model SiteSettings {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  siteName               String   @default("SkillsBoost")
+  siteUrl                String   @default("https://skillsboost.in")
+  defaultTitle           String   @default("Skills Boost — Learn Digital, Earn Digital")
+  defaultDescription     String   @default("Master in-demand tech skills with Skills Boost.")
+  defaultOgImage         String?
+  logo                   String?
+  phone                  String?
+  email                  String?
+  address                String?
+  city                   String?
+  state                  String?
+  country                String?
+  postalCode             String?
+  latitude               Float?
+  longitude              Float?
+  socialLinks            Json?
+  googleVerificationCode String?
+  themeColor             String   @default("#2563eb")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+model PageSEO {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  pageName        String   @unique
+  metaTitle       String?
+  metaDescription String?
+  ogTitle         String?
+  ogDescription   String?
+  ogImage         String?
+  canonicalUrl    String?
+  robots          String   @default("index, follow")
+  focusKeyword    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("page_seo")
+}
