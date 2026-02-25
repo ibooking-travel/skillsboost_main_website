@@ -9,8 +9,15 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const slugs = await getAllPublishedSlugs();
-  return slugs.map((c) => ({ slug: c.slug }));
+  try {
+    const slugs = await getAllPublishedSlugs();
+    return slugs.map((c) => ({ slug: c.slug }));
+  } catch (error) {
+    // During build time, database might not be accessible
+    // Return empty array to allow build to complete
+    console.warn("Could not fetch course slugs during build:", error);
+    return [];
+  }
 }
 
 export const revalidate = 60;
