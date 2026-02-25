@@ -86,11 +86,16 @@ export async function getCourseBySlug(slug: string): Promise<Course | null> {
 }
 
 export async function getAllPublishedSlugs(): Promise<{ slug: string }[]> {
-  const courses = await prisma.course.findMany({
-    where: { isPublished: true },
-    select: { slug: true },
-  });
-  return courses;
+  try {
+    const courses = await prisma.course.findMany({
+      where: { isPublished: true },
+      select: { slug: true },
+    });
+    return courses;
+  } catch (error) {
+    console.warn("Database unavailable during build, returning empty course slugs:", error);
+    return [];
+  }
 }
 
 export async function getActiveCategories() {
@@ -117,8 +122,13 @@ export async function adminGetAllCategories() {
 
 // SiteSettings
 export async function getSiteSettings(): Promise<SiteSettings | null> {
-  const settings = await prisma.siteSettings.findFirst();
-  return settings;
+  try {
+    const settings = await prisma.siteSettings.findFirst();
+    return settings;
+  } catch (error) {
+    console.warn("Database unavailable during build, returning null site settings:", error);
+    return null;
+  }
 }
 
 export async function upsertSiteSettings(data: Partial<SiteSettings>) {
@@ -131,7 +141,12 @@ export async function upsertSiteSettings(data: Partial<SiteSettings>) {
 
 // PageSEO
 export async function getPageSEO(pageName: string): Promise<PageSEO | null> {
-  return prisma.pageSEO.findUnique({ where: { pageName } });
+  try {
+    return prisma.pageSEO.findUnique({ where: { pageName } });
+  } catch (error) {
+    console.warn(`Database unavailable during build, returning null for page SEO ${pageName}:`, error);
+    return null;
+  }
 }
 
 export async function upsertPageSEO(pageName: string, data: Partial<PageSEO>) {
@@ -143,5 +158,10 @@ export async function upsertPageSEO(pageName: string, data: Partial<PageSEO>) {
 }
 
 export async function getAllPageSEO(): Promise<PageSEO[]> {
-  return prisma.pageSEO.findMany({ orderBy: { pageName: "asc" } });
+  try {
+    return prisma.pageSEO.findMany({ orderBy: { pageName: "asc" } });
+  } catch (error) {
+    console.warn("Database unavailable during build, returning empty page SEO array:", error);
+    return [];
+  }
 }

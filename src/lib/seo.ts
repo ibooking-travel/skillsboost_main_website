@@ -29,13 +29,7 @@ export async function buildMetadata(
   fallbackDescription: string,
   path?: string
 ): Promise<Metadata> {
-  let settings;
-  try {
-    settings = await getSiteSettings();
-  } catch (error) {
-    console.warn("Could not fetch site settings during build:", error);
-    settings = null;
-  }
+  const settings = await getSiteSettings();
   const siteUrl = settings?.siteUrl || "https://skillsboost.in";
   const siteName = settings?.siteName || "SkillsBoost";
   const defaultOgImage = settings?.defaultOgImage || "/og-image.png";
@@ -90,30 +84,24 @@ export async function buildMetadata(
 }
 
 export async function buildPageMetadata(pageName: string, fallbackTitle: string, fallbackDescription: string, path?: string): Promise<Metadata> {
-  try {
-    const pageSeo = await getPageSEO(pageName);
-    const seoData: SEOData = pageSeo
-      ? {
-          metaTitle: pageSeo.metaTitle ?? undefined,
-          metaDescription: pageSeo.metaDescription ?? undefined,
-          ogTitle: pageSeo.ogTitle ?? undefined,
-          ogDescription: pageSeo.ogDescription ?? undefined,
-          ogImage: pageSeo.ogImage ?? undefined,
-          canonicalUrl: pageSeo.canonicalUrl ?? undefined,
-          robots: pageSeo.robots,
-        }
-      : {};
-    return buildMetadata(seoData, fallbackTitle, fallbackDescription, path);
-  } catch (error) {
-    console.warn(`Could not fetch page SEO for ${pageName} during build:`, error);
-    return buildMetadata({}, fallbackTitle, fallbackDescription, path);
-  }
+  const pageSeo = await getPageSEO(pageName);
+  const seoData: SEOData = pageSeo
+    ? {
+        metaTitle: pageSeo.metaTitle ?? undefined,
+        metaDescription: pageSeo.metaDescription ?? undefined,
+        ogTitle: pageSeo.ogTitle ?? undefined,
+        ogDescription: pageSeo.ogDescription ?? undefined,
+        ogImage: pageSeo.ogImage ?? undefined,
+        canonicalUrl: pageSeo.canonicalUrl ?? undefined,
+        robots: pageSeo.robots,
+      }
+    : {};
+  return buildMetadata(seoData, fallbackTitle, fallbackDescription, path);
 }
 
 export async function generateOrganizationSchema() {
-  try {
-    const settings = await getSiteSettings();
-    if (!settings) return null;
+  const settings = await getSiteSettings();
+  if (!settings) return null;
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -158,10 +146,6 @@ export async function generateOrganizationSchema() {
   }
 
   return schema;
-  } catch (error) {
-    console.warn("Could not fetch site settings for organization schema during build:", error);
-    return null;
-  }
 }
 
 export function generateBreadcrumbSchema(items: { name: string; url: string }[]) {
