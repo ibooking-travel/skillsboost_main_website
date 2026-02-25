@@ -10,7 +10,13 @@ import { generateOrganizationSchema } from "@/lib/seo";
 export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings();
+  let settings;
+  try {
+    settings = await getSiteSettings();
+  } catch (error) {
+    console.warn("Could not fetch site settings during build:", error);
+    settings = null;
+  }
   const siteUrl = settings?.siteUrl || "https://skillsboost.in";
   const siteName = settings?.siteName || "SkillsBoost";
   const defaultTitle = settings?.defaultTitle || "Skills Boost — Learn Digital, Earn Digital";
